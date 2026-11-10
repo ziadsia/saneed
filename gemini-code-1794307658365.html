@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>كيان سند شباب الصعيد - حجز المقابلات الشخصية</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0f2942',
+                            blue: '#1e40af',
+                            gold: '#d97706',
+                            accent: '#10b981',
+                            bg: '#f8fafc'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    },
+                    keyframes: {
+                        strongZoom: {
+                            '0%': { opacity: '0', transform: 'scale(0.8) translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+                        },
+                        slideDown: {
+                            '0%': { opacity: '0', transform: 'translateY(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        glowPulse: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(217, 119, 6, 0.4)' },
+                            '50%': { boxShadow: '0 0 30px rgba(217, 119, 6, 0.9)' },
+                        }
+                    },
+                    animation: {
+                        'strong-zoom': 'strongZoom 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'slide-down': 'slideDown 0.5s ease-out forwards',
+                        'glow-pulse': 'glowPulse 2.5s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f1f5f9;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background: white;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 antialiased flex flex-col justify-between animate-slide-down">
+
+    <!-- Navbar -->
+    <header class="bg-brand-navy text-white shadow-xl no-print sticky top-0 z-50 border-b border-brand-gold/30">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-11 h-11 bg-brand-gold rounded-2xl flex items-center justify-center font-black text-slate-900 text-2xl shadow-lg transition-transform duration-300 hover:rotate-12 hover:scale-110 animate-glow-pulse">
+                    س
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">سند شباب الصعيد</h1>
+                    <p class="text-xs text-brand-gold font-semibold">نظام حجز المقابلات الشخصية</p>
+                </div>
+            </div>
+            <button onclick="toggleAdminModal()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl border border-slate-600 transition-all duration-300 hover:scale-105 hover:border-brand-gold flex items-center gap-2 shadow-md">
+                <i class="fa-solid fa-lock text-brand-gold"></i>
+                <span>إدارة الحجوزات</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto w-full px-4 py-8 flex-grow">
+        
+        <!-- Booking Form Section -->
+        <div id="booking-section" class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200 animate-slide-down">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-brand-navy via-brand-blue to-slate-900 p-8 text-white relative overflow-hidden">
+                <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-brand-gold/10 rounded-full blur-2xl pointer-events-none"></div>
+                <span class="bg-brand-gold/20 text-brand-gold text-xs font-bold px-3.5 py-1.5 rounded-full border border-brand-gold/40 inline-block mb-3 shadow-inner">
+                    محافظة الفيوم
+                </span>
+                <h2 class="text-2xl md:text-3xl font-extrabold mb-2 tracking-wide">تسجيل حضور المقابلة الشخصية</h2>
+                <p class="text-slate-200 text-sm md:text-base flex items-center gap-2">
+                    <i class="fa-regular fa-calendar-check text-brand-gold text-lg"></i>
+                    الخميس 12 نوفمبر 2026 | الأكاديمية الأولمبية - حي الجامعة (بجوار مقلة الجامعة)
+                </p>
+            </div>
+
+            <!-- Form -->
+            <form id="booking-form" onsubmit="handleFormSubmit(event)" class="p-6 md:p-8 space-y-6">
+                
+                <!-- Full Name -->
+                <div class="transition-all duration-300 hover:translate-x-1">
+                    <label class="block text-sm font-bold text-slate-700 mb-2">الاسم بالكامل <span class="text-red-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-brand-blue">
+                            <i class="fa-regular fa-user"></i>
+                        </span>
+                        <input type="text" id="fullName" required placeholder="أدخل اسمك رباعي"
+                               class="w-full pr-10 pl-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-4 focus:ring-brand-blue/20 focus:border-brand-blue outline-none transition-all duration-300">
+                    </div>
+                </div>
+
+                <!-- National ID & Education Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- National ID (Numbers Only) -->
+                    <div class="transition-all duration-300 hover:translate-x-1">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">الرقم القومي (14 رقم) <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-brand-blue">
+                                <i class="fa-solid fa-id-card"></i>
+                            </span>
+                            <input type="text" id="nationalId" required placeholder="أدخل الرقم القومي (14 رقم)" 
+                                   maxlength="14" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                   class="w-full pr-10 pl-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-4 focus:ring-brand-blue/20 focus:border-brand-blue outline-none transition-all duration-300">
+                        </div>
+                    </div>
+
+                    <!-- Education Qualification -->
+                    <div class="transition-all duration-300 hover:translate-x-1">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">المؤهل الدراسي <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-brand-blue">
+                                <i class="fa-solid fa-graduation-cap"></i>
+                            </span>
+                            <input type="text" id="education" required placeholder="مثال: بكالوريوس علوم زراعية / طالب..."
+                                   class="w-full pr-10 pl-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-4 focus:ring-brand-blue/20 focus:border-brand-blue outline-none transition-all duration-300">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phone & Email Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Phone (Numbers Only - 11 digits) -->
+                    <div class="transition-all duration-300 hover:translate-x-1">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">رقم الموبايل / الواتساب (11 رقم) <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-brand-blue">
+                                <i class="fa-solid fa-mobile-screen-button"></i>
+                            </span>
+                            <input type="text" id="phone" required placeholder="01xxxxxxxxx" 
+                                   maxlength="11" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                                   class="w-full pr-10 pl-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-4 focus:ring-brand-blue/20 focus:border-brand-blue outline-none transition-all duration-300">
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="transition-all duration-300 hover:translate-x-1">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">البريد الإلكتروني <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-brand-blue">
+                                <i class="fa-regular fa-envelope"></i>
+                            </span>
+                            <input type="email" id="email" required placeholder="name@example.com"
+                                   class="w-full pr-10 pl-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-4 focus:ring-brand-blue/20 focus:border-brand-blue outline-none transition-all duration-300">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Select Interview Slot -->
+                <div>
+                    <label class="block text-sm font-bold text-slate-700 mb-2">اختر موعد المقابلة المناسب (من 12 ظهراً لـ 3 عصراً) <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3.5" id="slots-container">
+                        <!-- Slot options inserted dynamically -->
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button type="submit" id="submit-btn" class="w-full bg-gradient-to-r from-brand-navy via-brand-blue to-brand-navy hover:from-brand-blue hover:to-brand-navy text-white font-extrabold py-4 px-6 rounded-2xl shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-3 text-lg border border-brand-gold/30 animate-glow-pulse">
+                        <i class="fa-solid fa-circle-check text-brand-gold text-xl"></i>
+                        <span>تأكيد الحجز واستخراج الباركود فوراً</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Ticket / Confirmation Card View (Hidden by default) -->
+        <div id="ticket-section" class="hidden space-y-6">
+            
+            <div class="no-print bg-emerald-50 border-2 border-emerald-300 text-emerald-900 p-5 rounded-2xl flex items-center gap-4 shadow-md">
+                <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center text-2xl shadow-lg animate-bounce flex-shrink-0">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                    <h3 class="font-black text-lg">تم تأكيد الحجز بنجاح!</h3>
+                    <p class="text-sm font-medium">الباركود التالي يحتوي على كافة بياناتك الشخصية المعتمدة. احفظ لقطة شاشة (Screenshot) من الكارت.</p>
+                </div>
+            </div>
+
+            <!-- Ticket Component -->
+            <div id="printable-ticket" class="bg-white rounded-3xl shadow-2xl overflow-hidden border-4 border-brand-navy relative transform transition-transform hover:scale-[1.01] duration-300">
+                <!-- Watermark Logo -->
+                <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                    <span class="text-9xl font-black">سند</span>
+                </div>
+
+                <div class="bg-gradient-to-r from-brand-navy to-brand-blue text-white p-6 text-center relative">
+                    <div class="inline-block bg-brand-gold text-slate-900 text-xs font-black px-5 py-1.5 rounded-full uppercase tracking-wider mb-2 shadow-md">
+                        كارت حجز المقابلة الشخصية الرسمي
+                    </div>
+                    <h2 class="text-3xl font-black">كيان سند شباب الصعيد</h2>
+                    <p class="text-slate-200 text-xs font-semibold mt-1">الفيوم - حي الجامعة - الأكاديمية الأولمبية | الخميس 12 نوفمبر 2026</p>
+                </div>
+
+                <div class="p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+                    <!-- Ticket Details -->
+                    <div class="md:col-span-2 space-y-4 text-right">
+                        <div>
+                            <span class="text-xs text-slate-400 font-bold block mb-1">اسم المتقدم</span>
+                            <span id="ticket-name" class="text-2xl font-black text-slate-900 border-b-2 border-brand-gold/30 pb-1 inline-block"></span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                            <div>
+                                <span class="text-xs text-slate-400 font-bold block">رقم الحجز الفريد</span>
+                                <span id="ticket-id" class="text-base font-black text-brand-blue font-mono bg-blue-50 px-2 py-1 rounded-lg inline-block mt-1"></span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-bold block">الرقم القومي</span>
+                                <span id="ticket-national-id" class="text-sm font-black text-slate-800 font-mono"></span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+                            <div>
+                                <span class="text-xs text-slate-400 font-bold block">المؤهل الدراسي</span>
+                                <span id="ticket-education" class="text-sm font-bold text-slate-800"></span>
+                            </div>
+                            <div>
+                                <span class="text-xs text-slate-400 font-bold block">موعد المقابلة</span>
+                                <span id="ticket-slot" class="text-sm font-bold text-brand-gold bg-amber-50 px
