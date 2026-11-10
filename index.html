@@ -413,6 +413,13 @@
                 return;
             }
 
+            // التحقق مما إذا كان الرقم القومي مسجلاً مسبقاً
+            const existingBooking = bookings.find(b => b.nationalId === nationalId);
+            if (existingBooking) {
+                alert('عذراً! هذا الرقم القومي مسجل مسبقاً برقم حجز: ' + existingBooking.id);
+                return;
+            }
+
             const sequence = String(bookings.length + 1).padStart(4, '0');
             const bookingId = `SND-20261112-${sequence}`;
 
