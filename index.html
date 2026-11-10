@@ -165,7 +165,7 @@
                         </div>
                     </div>
 
-                    <!-- Email (Optional) -->
+                  <!-- Email (Optional) -->
                     <div class="transition-all duration-300 hover:translate-x-1">
                         <label class="block text-sm font-bold text-slate-700 mb-2">البريد الإلكتروني <span class="text-slate-400 font-normal">(اختياري)</span></label>
                         <div class="relative">
@@ -176,7 +176,6 @@
                                    class="w-full pr-10 pl-4 py-3.5 bg-slate-50 border border-slate-300 rounded-xl focus:ring-4 focus:ring-brand-blue/20 focus:border-brand-blue outline-none transition-all duration-300">
                         </div>
                     </div>
-                </div>
 
                 <!-- Select Interview Slot -->
                 <div>
@@ -302,4 +301,234 @@
                     <i class="fa-solid fa-users-gear text-brand-gold text-xl"></i>
                     إدارة الحجوزات الكلية (المصممة محلياً)
                 </h3>
-                <button onclick="toggleAdminModal()" class="text-slate-3
+                <button onclick="toggleAdminModal()" class="text-slate-300 hover:text-white text-2xl transition-transform hover:rotate-90">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 overflow-y-auto flex-grow space-y-4">
+                <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200">
+                    <p class="text-sm font-bold text-slate-700">إجمالي الحجوزات المسجلة: <b id="admin-count" class="text-brand-blue text-base">0</b> حجز</p>
+                    <button onclick="exportToCSV()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black py-2.5 px-5 rounded-xl shadow-lg transition-all duration-300 hover:scale-105 flex items-center gap-2">
+                        <i class="fa-solid fa-file-excel text-sm"></i>
+                        <span>تصدير إلى ملف إكسيل (CSV)</span>
+                    </button>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-inner">
+                    <table class="w-full text-right text-xs">
+                        <thead class="bg-slate-100 text-slate-800 font-black border-b">
+                            <tr>
+                                <th class="p-3.5">رقم الحجز</th>
+                                <th class="p-3.5">الاسم</th>
+                                <th class="p-3.5">الرقم القومي</th>
+                                <th class="p-3.5">المؤهل الدراسي</th>
+                                <th class="p-3.5">الموعد</th>
+                                <th class="p-3.5">الهاتف</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-table-body" class="divide-y divide-slate-100 text-slate-600 font-medium">
+                            <!-- Records inserted dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t text-left">
+                <button onclick="toggleAdminModal()" class="bg-slate-300 hover:bg-slate-400 text-slate-800 text-xs font-bold py-2.5 px-6 rounded-xl transition-all duration-200 shadow">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-6 text-center text-xs border-t border-slate-800 no-print">
+        <p class="font-bold">جميع الحقوق محفوظة © 2026 - كيان سند شباب الصعيد (محافظة الفيوم)</p>
+    </footer>
+
+    <!-- Scripts Logic -->
+    <script>
+        const slots = [
+            "12:00 ظهراً - 12:30 ظهراً",
+            "12:30 ظهراً - 01:00 ظهراً",
+            "01:00 ظهراً - 01:30 ظهراً",
+            "01:30 ظهراً - 02:00 عصراً",
+            "02:00 عصراً - 02:30 عصراً",
+            "02:30 عصراً - 03:00 عصراً"
+        ];
+
+        let selectedSlot = slots[0];
+        let bookings = JSON.parse(localStorage.getItem('snd_bookings') || '[]');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('slots-container');
+            if (container) {
+                container.innerHTML = '';
+                slots.forEach((slot, index) => {
+                    const isSelected = index === 0;
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = `slot-btn p-3.5 rounded-2xl border text-xs font-bold transition-all duration-300 text-center flex flex-col items-center justify-center gap-1.5 shadow-sm ${
+                        isSelected 
+                        ? 'border-brand-blue bg-blue-50 text-brand-blue ring-4 ring-brand-blue/20 scale-[1.03] shadow-md font-black' 
+                        : 'border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 hover:scale-[1.01]'
+                    }`;
+                    btn.onclick = () => selectSlot(btn, slot);
+                    btn.innerHTML = `
+                        <i class="fa-regular fa-clock text-base"></i>
+                        <span>${slot}</span>
+                    `;
+                    container.appendChild(btn);
+                });
+            }
+        });
+
+        function selectSlot(element, slot) {
+            document.querySelectorAll('.slot-btn').forEach(b => {
+                b.className = 'slot-btn p-3.5 rounded-2xl border text-xs font-bold transition-all duration-300 text-center flex flex-col items-center justify-center gap-1.5 border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 hover:scale-[1.01] shadow-sm';
+            });
+            element.className = 'slot-btn p-3.5 rounded-2xl border text-xs font-bold transition-all duration-300 text-center flex flex-col items-center justify-center gap-1.5 border-brand-blue bg-blue-50 text-brand-blue ring-4 ring-brand-blue/20 scale-[1.03] shadow-md font-black';
+            selectedSlot = slot;
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('fullName').value.trim();
+            const nationalId = document.getElementById('nationalId').value.trim();
+            const education = document.getElementById('education').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+            if (!name || !nationalId || !education || !phone || !email) {
+                alert('يرجى ملء كافة الحقول المطلوبة بشكل صحيح.');
+                return;
+            }
+
+            if (nationalId.length !== 14) {
+                alert('الرقم القومي يجب أن يكون 14 رقماً صحيحاً.');
+                return;
+            }
+
+            if (phone.length !== 11) {
+                alert('رقم الموبايل يجب أن يكون 11 رقماً صحيحاً.');
+                return;
+            }
+
+            // التحقق مما إذا كان الرقم القومي مسجلاً مسبقاً
+            const existingBooking = bookings.find(b => b.nationalId === nationalId);
+            if (existingBooking) {
+                alert('عذراً! هذا الرقم القومي مسجل مسبقاً برقم حجز: ' + existingBooking.id);
+                return;
+            }
+
+            const sequence = String(bookings.length + 1).padStart(4, '0');
+            const bookingId = `SND-20261112-${sequence}`;
+
+            const record = {
+                id: bookingId,
+                name: name,
+                nationalId: nationalId,
+                education: education,
+                phone: phone,
+                email: email,
+                slot: selectedSlot,
+                date: new Date().toISOString()
+            };
+
+            bookings.push(record);
+            localStorage.setItem('snd_bookings', JSON.stringify(bookings));
+
+            fetch('https://script.google.com/macros/s/AKfycbzx5y7lABZtgnhblwjKjYgW8Wns9CtNYBWu9iO7D6SppHdp-jjuhurlE12H-17ZFHAL/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(record)
+            }).catch(err => console.log('Error:', err));
+
+            const qrDataText = `كيان سند شباب الصعيد\nرقم الحجز: ${bookingId}\nالاسم: ${name}\nالرقم القومي: ${nationalId}\nالمؤهل: ${education}\nالهاتف: ${phone}\nالموعد: ${selectedSlot}\nالمكان: الأكاديمية الأولمبية - الفيوم، حي الجامعة (بجوار مقلة الجامعة)`;
+
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrDataText)}`;
+
+            document.getElementById('ticket-name').innerText = name;
+            document.getElementById('ticket-id').innerText = bookingId;
+            document.getElementById('ticket-national-id').innerText = nationalId;
+            document.getElementById('ticket-education').innerText = education;
+            document.getElementById('ticket-slot').innerText = selectedSlot;
+            document.getElementById('ticket-contact').innerText = `${phone} | ${email}`;
+            document.getElementById('ticket-qr').src = qrUrl;
+
+            const bookingSec = document.getElementById('booking-section');
+            const ticketSec = document.getElementById('ticket-section');
+            
+            bookingSec.classList.add('hidden');
+            ticketSec.classList.remove('hidden');
+            
+            ticketSec.classList.remove('animate-strong-zoom');
+            void ticketSec.offsetWidth;
+            ticketSec.classList.add('animate-strong-zoom');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function resetForm() {
+            document.getElementById('booking-form').reset();
+            document.getElementById('ticket-section').classList.add('hidden');
+            document.getElementById('booking-section').classList.remove('hidden');
+        }
+
+        function toggleAdminModal() {
+            const modal = document.getElementById('admin-modal');
+            if (modal.classList.contains('hidden')) {
+                renderAdminTable();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        function renderAdminTable() {
+            document.getElementById('admin-count').innerText = bookings.length;
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
+
+            if (bookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center p-6 text-slate-400 font-bold">لا توجد حجوزات مسجلة حتى الآن</td></tr>`;
+                return;
+            }
+
+            bookings.forEach(b => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3.5 font-mono font-black text-brand-blue">${b.id}</td>
+                    <td class="p-3.5 font-bold text-slate-800">${b.name}</td>
+                    <td class="p-3.5 font-mono text-slate-700">${b.nationalId}</td>
+                    <td class="p-3.5">${b.education}</td>
+                    <td class="p-3.5">${b.slot}</td>
+                    <td class="p-3.5 text-slate-500 font-mono">${b.phone}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function exportToCSV() {
+            if (bookings.length === 0) {
+                alert('لا توجد بيانات للتصدير!');
+                return;
+            }
+
+            let csvContent = "\uFEFFرقم الحجز,الاسم بالكامل,الرقم القومي,المؤهل الدراسي,رقم الهاتف,البريد الإلكتروني,الموعد\n";
+            bookings.forEach(b => {
+                csvContent += `"${b.id}","${b.name}","\t${b.nationalId}","${b.education}","\t${b.phone}","${b.email}","${b.slot}"\n`;
+            });
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `حجوزات_سند_شباب_الصعيد_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
